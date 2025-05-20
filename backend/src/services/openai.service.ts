@@ -1,29 +1,21 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 
+// Load environment variables from .env file
 dotenv.config();
 
-// Diagnostic logging to help debug environment variable loading
-console.log('OpenAI Service - Loading environment variables');
-console.log(`Current AZURE_OPENAI_ENDPOINT: ${process.env.AZURE_OPENAI_ENDPOINT}`);
-
-// Add fallback values if they're not set
-if (!process.env.AZURE_OPENAI_ENDPOINT) {
-  console.log('Setting fallback OpenAI endpoint in service file');
-  process.env.AZURE_OPENAI_ENDPOINT = 'https://crots-mawlzwnu-eastus2.cognitiveservices.azure.com/';
-  process.env.AZURE_OPENAI_API_KEY = '6aq74HPSLokdu6atg7FCM6e7gPlCpgwzBP7cc5aNRzMusp4EHHnDJQQJ99BEACHYHv6XJ3w3AAAAACOGD5Hr';
-  process.env.AZURE_OPENAI_DEPLOYMENT = 'nestle-chatbot-model';
-  process.env.AZURE_OPENAI_API_VERSION = '2024-12-01-preview';
-}
-
-// Log again to confirm they're set properly
-console.log(`Updated AZURE_OPENAI_ENDPOINT: ${process.env.AZURE_OPENAI_ENDPOINT}`);
-
-// Azure OpenAI configuration - using direct fallback values to ensure they're set
-const openaiEndpoint = process.env.AZURE_OPENAI_ENDPOINT || 'https://crots-mawlzwnu-eastus2.cognitiveservices.azure.com/';
-const openaiApiKey = process.env.AZURE_OPENAI_API_KEY || '6aq74HPSLokdu6atg7FCM6e7gPlCpgwzBP7cc5aNRzMusp4EHHnDJQQJ99BEACHYHv6XJ3w3AAAAACOGD5Hr';
+// Azure OpenAI configuration
+const openaiEndpoint = process.env.AZURE_OPENAI_ENDPOINT;
+const openaiApiKey = process.env.AZURE_OPENAI_API_KEY;
 const openaiDeployment = process.env.AZURE_OPENAI_DEPLOYMENT || 'nestle-chatbot-model';
 const apiVersion = process.env.AZURE_OPENAI_API_VERSION || '2024-12-01-preview';
+
+// Log configuration (without exposing sensitive values)
+console.log('OpenAI Service - Configuration:');
+console.log(`Endpoint configured: ${openaiEndpoint ? 'Yes' : 'No'}`);
+console.log(`API Key configured: ${openaiApiKey ? 'Yes' : 'No'}`);
+console.log(`Deployment: ${openaiDeployment}`);
+console.log(`API Version: ${apiVersion}`);
 
 /**
  * Generate a response from Azure OpenAI
@@ -34,9 +26,9 @@ const apiVersion = process.env.AZURE_OPENAI_API_VERSION || '2024-12-01-preview';
 export const generateResponse = async (prompt: string, contextInfo?: string): Promise<string> => {
   try {
     // Make sure we have an endpoint configured
-    if (!openaiEndpoint) {
-      console.error('Azure OpenAI endpoint is not configured');
-      return 'I apologize, but I encountered an issue while processing your request. The Azure OpenAI endpoint is not properly configured.';
+    if (!openaiEndpoint || !openaiApiKey) {
+      console.error('Azure OpenAI credentials not properly configured');
+      return 'I apologize, but I encountered an issue while processing your request. The Azure OpenAI service is not properly configured.';
     }
 
     // Ensure the endpoint has the correct format
@@ -53,7 +45,6 @@ export const generateResponse = async (prompt: string, contextInfo?: string): Pr
     const url = `${baseEndpoint}/openai/deployments/${openaiDeployment}/chat/completions?api-version=${apiVersion}`;
     
     console.log(`Making OpenAI request to: ${url}`);
-    console.log(`Using API Key (first 5 chars): ${openaiApiKey.substring(0, 5)}...`);
     
     // Make the request to Azure OpenAI
     const response = await axios.post(
@@ -146,20 +137,26 @@ export const generateEmbeddings = async (text: string): Promise<number[]> => {
   }
 };
 
-// Test function to verify configuration
-const testConfig = () => {
-  console.log('Testing OpenAI service configuration:');
-  console.log(`Endpoint: ${openaiEndpoint}`);
-  console.log(`API Key: ${openaiApiKey ? 'Set (first 5 chars: ' + openaiApiKey.substring(0, 5) + '...)' : 'Not set'}`);
-  console.log(`Deployment: ${openaiDeployment}`);
-  console.log(`API Version: ${apiVersion}`);
+// Check if configuration is complete
+const validateConfig = () => {
+  const missingVars = [];
+  if (!openaiEndpoint) missingVars.push('AZURE_OPENAI_ENDPOINT');
+  if (!openaiApiKey) missingVars.push('AZURE_OPENAI_API_KEY');
+  if (!openaiDeployment) missingVars.push('AZURE_OPENAI_DEPLOYMENT');
+  
+  if (missingVars.length > 0) {
+    console.warn(`Warning: Missing environment variables: ${missingVars.join(', ')}`);
+    console.warn('Make sure your .env file is properly configured.');
+  } else {
+    console.log('OpenAI service configuration validated successfully');
+  }
 };
 
-// Run the test when this module is loaded
-testConfig();
+// Run the validation when this module is loaded
+validateConfig();
 
 export default {
   generateResponse,
   generateEmbeddings,
-  testConfig // Add this to exports
+  validateConfig
 };
