@@ -10,18 +10,21 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // Set environment variables manually if they're not loaded from .env
 if (!process.env.AZURE_OPENAI_ENDPOINT) {
-  process.env.AZURE_OPENAI_ENDPOINT = 'https://crots-mawlzwnu-eastus2.cognitiveservices.azure.com/';
-  process.env.AZURE_OPENAI_API_KEY = '6aq74HPSLokdu6atg7FCM6e7gPlCpgwzBP7cc5aNRzMusp4EHHnDJQQJ99BEACHYHv6XJ3w3AAAAACOGD5Hr';
-  process.env.AZURE_OPENAI_DEPLOYMENT = 'nestle-chatbot-model';
+  console.log('Warning: Environment variables not found. Please make sure your .env file is properly configured.');
+  
+  // Use placeholders instead of actual keys
+  process.env.AZURE_OPENAI_ENDPOINT = 'YOUR_OPENAI_ENDPOINT_HERE';
+  process.env.AZURE_OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
+  process.env.AZURE_OPENAI_DEPLOYMENT = 'YOUR_OPENAI_DEPLOYMENT_NAME_HERE';
   process.env.AZURE_OPENAI_API_VERSION = '2024-12-01-preview';
   
-  process.env.AZURE_SEARCH_ENDPOINT = 'https://nestle-ai-search.search.windows.net';
-  process.env.AZURE_SEARCH_API_KEY = '9kIT7YGx2Vs9dzQ1X1lxJQPEzK8ICNS8QSsPj60z3oAzSeA0D3Ql';
+  process.env.AZURE_SEARCH_ENDPOINT = 'YOUR_SEARCH_ENDPOINT_HERE';
+  process.env.AZURE_SEARCH_API_KEY = 'YOUR_SEARCH_API_KEY_HERE';
   process.env.AZURE_SEARCH_INDEX_NAME = 'nestle-products-index';
   
-  process.env.AZURE_COSMOS_ENDPOINT = 'https://nestle-graph-db.documents.azure.com:443/';
-  process.env.AZURE_COSMOS_GREMLIN_ENDPOINT = 'wss://nestle-graph-db.gremlin.cosmos.azure.com:443/';
-  process.env.AZURE_COSMOS_KEY = 'FElOp0ZQzARcRlbjsfYYsCUyi1jzWBJyhd89X3teJJaerrW9xIlJhhNtNNrjgb6Rw9pUmS9t01eMACDb4IxyvQ==';
+  process.env.AZURE_COSMOS_ENDPOINT = 'YOUR_COSMOS_ENDPOINT_HERE';
+  process.env.AZURE_COSMOS_GREMLIN_ENDPOINT = 'YOUR_GREMLIN_ENDPOINT_HERE';
+  process.env.AZURE_COSMOS_KEY = 'YOUR_COSMOS_KEY_HERE';
   process.env.AZURE_COSMOS_DATABASE = 'NestleProductsDB';
   process.env.AZURE_COSMOS_GRAPH = 'ProductGraph';
 }
